@@ -44,7 +44,7 @@ Snake = function(game, spriteKey, x, y) {
 
     this.lastHeadPosition = new Phaser.Point(this.head.body.x, this.head.body.y);
     //add 30 sections behind the head
-    this.initSections(30);
+    this.initSections(15);
 
     //initialize the eyes
     this.eyes = new EyePair(this.game, this.head, this.scale);
@@ -120,6 +120,11 @@ Snake.prototype = {
      */
     addSectionsAfterLast: function(amount) {
         this.queuedSections += amount;
+    },
+    removeSections: function(amount) {
+        if (this.queuedSections > 1){
+            this.queuedSections -= amount;
+        }
     },
     /**
      * Call from the main update loop
@@ -275,6 +280,11 @@ Snake.prototype = {
     incrementSize: function() {
         this.addSectionsAfterLast(1);
         this.setScale(this.scale * 1.01);
+    },
+    //decrement size and length
+    decrementSize: function() {
+        this.removeSections(1);
+        this.setScale(this.scale * .99);
     },
     /**
      * Destroy the snake

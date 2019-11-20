@@ -9,14 +9,20 @@ PlayerSnake = function(game, spriteKey, x, y) {
     Snake.call(this, game, spriteKey, x, y);
     this.cursors = game.input.keyboard.createCursorKeys();
 
-    //handle the space key so that the player's snake can speed up
+    //handle the space and up key so that the player's snake can speed up
     var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    var upArrowKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
     var self = this;
     spaceKey.onDown.add(this.spaceKeyDown, this);
     spaceKey.onUp.add(this.spaceKeyUp, this);
+    upArrowKey.onDown.add(this.upKeyDown, this);
+    upArrowKey.onUp.add(this.upKeyUp, this);
     this.addDestroyedCallback(function() {
         spaceKey.onDown.remove(this.spaceKeyDown, this);
         spaceKey.onUp.remove(this.spaceKeyUp, this);
+        upArrowKey.onDown.remove(this.upKeyDown, this);
+        upArrowKey.onUp.remove(this.upKeyUp, this);
+
     }, this);
 }
 
@@ -30,6 +36,15 @@ PlayerSnake.prototype.spaceKeyDown = function() {
 }
 //make the snake slow down when the space key is up again
 PlayerSnake.prototype.spaceKeyUp = function() {
+    this.speed = this.slowSpeed;
+    this.shadow.isLightingUp = false;
+}
+PlayerSnake.prototype.upKeyDown = function() {
+    this.speed = this.fastSpeed;
+    this.shadow.isLightingUp = true;
+}
+//make the snake slow down when the space key is up again
+PlayerSnake.prototype.upKeyUp = function() {
     this.speed = this.slowSpeed;
     this.shadow.isLightingUp = false;
 }
@@ -52,6 +67,16 @@ PlayerSnake.prototype.update = function() {
     }
     else {
         angle = -180-angle;
+    }
+    if (this.game.input.activePointer.leftButton.isDown){
+        this.speed = this.fastSpeed;
+        this.shadow.isLightingUp = true;
+        this.game.time.events.loop(Phaser.Timer.SECOND, this.head.snake.decrementSize, this);
+    }
+    else{
+        this.speed = this.slowSpeed;
+        this.shadow.isLightingUp = false;
+        
     }
     var dif = this.head.body.angle - angle;
     this.head.body.setZeroRotation();
